@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import numberService from './services/Numbers.jsx'
 import axios from 'axios'
+import './index.css'
 
 const Filter = ( {filter, setFilter} ) => {
   const handleFilterChange = (event) => {
@@ -15,7 +16,19 @@ const Filter = ( {filter, setFilter} ) => {
     )
   }
 
-const PersonForm = ( {newName, newNumber, setNewName, setNewNumber, persons, setPersons} ) => {
+const Notification = ({ message, color }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="error" style={{ color: color }}>
+      {message}
+    </div>
+  )
+}
+
+const PersonForm = ( {newName, newNumber, setNewName, setNewNumber, persons, setPersons, setMessage, setColor} ) => {
   const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
@@ -42,6 +55,18 @@ const PersonForm = ( {newName, newNumber, setNewName, setNewNumber, persons, set
         .then(response => {
           setPersons(persons.map(p => p.id !== person.id ? p : updatedPerson))
         })
+      .catch(error => {
+        setColor('red')
+        setMessage('Failed to update number')
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+      setColor('green')
+      setMessage(`Updated ${newName}'s number`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
       setNewName('')
       setNewNumber('')
       return
@@ -49,9 +74,19 @@ const PersonForm = ( {newName, newNumber, setNewName, setNewNumber, persons, set
     numberService.create(personObject)
      .then(response => {
       setPersons(persons.concat(response))
-      console.log(`Added ${response.name}`)
+      setMessage(`Added ${response.name}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
       setNewName('')
       setNewNumber('')
+    })
+    .catch(error => {
+      setColor('red')
+      setMessage('Failed to add person')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
   }
   return (
@@ -69,7 +104,7 @@ const PersonForm = ( {newName, newNumber, setNewName, setNewNumber, persons, set
   )
 }
 
-const Persons = ( {persons, filter, setPersons} ) => {
+const Persons = ( {persons, filter, setPersons, setMessage, setColor} ) => {
   const handleDelete = (id) => {
     if (!window.confirm('Delete this person?')) {
       return
@@ -77,7 +112,19 @@ const Persons = ( {persons, filter, setPersons} ) => {
     numberService.remove(id)
      .then(response => {
       console.log(`Deleted ${response.name}`)
+      setColor('green')
+      setMessage(`Deleted ${response.name}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     })
+      .catch(error => {
+        setColor('red')
+        setMessage('Failed to delete person')
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
     setPersons(persons.filter(person => person.id !== id))
   }
 
@@ -94,6 +141,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
+  const [color, setColor] = useState('green')
 
   useEffect(() => {
   console.log('effect')
@@ -110,9 +159,10 @@ const App = () => {
       <h2>Phonebook</h2>
       <Filter filter={filter} setFilter={setFilter} />
       <h2>Add new</h2>
-      <PersonForm newName={newName} newNumber={newNumber} setNewName={setNewName} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons} />
+      <PersonForm newName={newName} newNumber={newNumber} setNewName={setNewName} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons} setMessage={setMessage} setColor={setColor} />
+      <Notification className="error" message={message} color={color} />
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} setPersons={setPersons} />
+      <Persons persons={persons} filter={filter} setPersons={setPersons} setMessage={setMessage} setColor={setColor} />
     </div>
   )
 }
