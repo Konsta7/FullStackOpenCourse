@@ -1,6 +1,5 @@
 const express = require('express')
 const morgan = require('morgan');
-const cors = require('cors')
 const app = express()
 
 let numbers = [
@@ -25,7 +24,6 @@ let numbers = [
     "id": "78"
   }
 ]
-app.use(cors())
 
 app.use(express.json())
 
