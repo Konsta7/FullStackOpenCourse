@@ -6,9 +6,28 @@ const Number = require('./models/number')
 
 app.use(express.json())
 
-app.use(morgan('tiny'))
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  next(error)
+}
+
+app.use(morgan('tiny'))
 app.use(express.static('dist'))
+app.use(requestLogger)
+app.use(errorHandler)
+
+
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -26,7 +45,7 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   Number.findById(request.params.id).then(number => {
     if (number) {
@@ -36,21 +55,36 @@ app.get('/api/persons/:id', (request, response) => {
       response.status(404).end()
     }
   })
+  .catch((error) => next(error))
 })
 
-/*
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  numbers = numbers.filter(n => n.id !== id)
-  if (!numbers.find(n => n.id === id)) {
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  Number.findByIdAndDelete(request.params.id).then(() => {
     console.log('Number deleted')
     response.status(204).end()
-  } else {
-    console.log('Number not found')
-    response.status(404).end()
-  }
+  })
+  .catch((error) => next(error))
 })
-*/
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  const body = request.body
+
+  Number.findById(id).then(number => {
+    if (!number) {
+      return response.status(404).end()
+    }
+
+    number.name = body.name
+    number.number = body.number
+
+    return number.save().then(updatedNumber => {
+      response.json(updatedNumber)
+    })
+})
+  .catch((error) => next(error))
+})
 
 app.post('/api/persons', (request, response) => {
   const person = request.body
@@ -67,16 +101,23 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const number = new Number({
+  const entry = new Number({
     name: person.name,
     number: person.number,
   })
 
-  number.save().then(savedNumber => {
+  entry.save().then(savedNumber => {
     console.log('Number saved!')
     response.json(savedNumber)
   })
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
