@@ -1,3 +1,4 @@
 node_modules
 test_delete.rest
 test_post.rest
+.env
