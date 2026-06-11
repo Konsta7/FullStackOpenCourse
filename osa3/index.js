@@ -1,6 +1,6 @@
 require('dotenv').config()
 const express = require('express')
-const morgan = require('morgan');
+const morgan = require('morgan')
 const app = express()
 const Number = require('./models/number')
 
@@ -49,16 +49,15 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
-  const id = request.params.id
   Number.findById(request.params.id).then(number => {
     if (number) {
       response.json(number)
-    }  
+    }
     else {
       response.status(404).end()
     }
   })
-  .catch((error) => next(error))
+    .catch((error) => next(error))
 })
 
 
@@ -67,7 +66,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     console.log('Number deleted')
     response.status(204).end()
   })
-  .catch((error) => next(error))
+    .catch((error) => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -85,22 +84,22 @@ app.put('/api/persons/:id', (request, response, next) => {
     return number.save().then(updatedNumber => {
       response.json(updatedNumber)
     })
-})
-  .catch((error) => next(error))
+  })
+    .catch((error) => next(error))
 })
 
 app.post('/api/persons', (request, response, next) => {
   const person = request.body
 
   if (!person.name) {
-    return response.status(400).json({ 
-      error: 'name missing' 
+    return response.status(400).json({
+      error: 'name missing'
     })
   }
 
   if (!person.number) {
-    return response.status(400).json({ 
-      error: 'number missing' 
+    return response.status(400).json({
+      error: 'number missing'
     })
   }
 
@@ -113,7 +112,7 @@ app.post('/api/persons', (request, response, next) => {
     console.log('Number saved!')
     response.json(savedNumber)
   })
-  .catch((error) => next(error))
+    .catch((error) => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
