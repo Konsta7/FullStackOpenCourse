@@ -14,7 +14,7 @@ const initialBlogs = [
     url: 'https://github.com/getify/You-Dont-Know-JS',
     likes: 15,
     },
-    
+
     {
     title: 'The Pragmatic Programmer',
     author: 'Andrew Hunt & David Thomas',
@@ -59,6 +59,35 @@ test('a valid blog can be added', async () => {
     .expect('Content-Type', /application\/json/)
     
     assert.strictEqual((await api.get('/api/blogs')).body.length, initialBlogs.length + 1)
+})
+
+test('deleting a blog works', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToDelete = blogsAtStart.body[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+    const blogsAtEnd = await api.get('/api/blogs')
+    assert.strictEqual(blogsAtEnd.body.length, initialBlogs.length - 1)
+})
+
+test('updating a blog works', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToUpdate = blogsAtStart.body[0]
+    const updatedBlog = {
+        author: blogToUpdate.author,
+        title: blogToUpdate.title,
+        url: blogToUpdate.url,
+        likes: 16
+    }
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlog)
+    .expect(200)
+
+    const blogsAtEnd = await api.get('/api/blogs')
+    assert.strictEqual(blogsAtEnd.body[0].likes, updatedBlog.likes)
 })
 
 after(async () => {
