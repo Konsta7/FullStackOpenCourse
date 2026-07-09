@@ -4,6 +4,8 @@ const { test, after, beforeEach } = require('node:test')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const bcrypt = require('bcryptjs')
 
 const api = supertest(app)
 
@@ -23,12 +25,31 @@ const initialBlogs = [
     }
 ]
 
+const initialUsers = [
+   {
+    username: 'testuser',
+    name: 'Test User',
+    passwordHash: bcrypt.hashSync('testpassword', 10)
+   },
+
+   {
+    username: 'anotheruser',
+    name: 'Another User',
+    passwordHash: bcrypt.hashSync('anotherpassword', 10)
+   }
+]
+
 beforeEach(async () => {
   await Blog.deleteMany({})
   let blogObject = new Blog(initialBlogs[0])
   await blogObject.save()
   blogObject = new Blog(initialBlogs[1])
   await blogObject.save()
+  await User.deleteMany({})
+  let userObject = new User(initialUsers[0])
+  await userObject.save()
+  userObject = new User(initialUsers[1])
+  await userObject.save()
 })
 
 
@@ -89,6 +110,30 @@ test('updating a blog works', async () => {
     const blogsAtEnd = await api.get('/api/blogs')
     assert.strictEqual(blogsAtEnd.body[0].likes, updatedBlog.likes)
 })
+
+test('all users are returned', async () => {
+    const response = await api.get('/api/users')
+    assert.strictEqual(response.body.length, initialUsers.length)
+})
+
+test('adding a new user works', async () => {
+    const usersAtStart = await api.get('/api/users')
+    const newUser = {
+      username: 'Pertti21',
+      name: 'Pertti Pouta',
+      password: 'testpassword'
+    }
+
+    await api.post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await api.get('/api/users')
+    assert.strictEqual(usersAtEnd.body.length, usersAtStart.body.length + 1)
+})
+
+
 
 after(async () => {
   await mongoose.connection.close()
