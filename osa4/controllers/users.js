@@ -1,33 +1,28 @@
 const usersRouter = require('express').Router()
+const user = require('../models/user')
 const User = require('../models/user')
 const bcrypt = require('bcryptjs')
 
 usersRouter.get('/', async (request, response) => {
     console.log("fetching users...")
-    const users = await User.find({})
+    const users = await User.find({}).populate('blogs', { title: 1, author: 1, url: 1 })
     response.json(users)
 })
 
 usersRouter.post('/', async (request, response) => {
-    const { username, name, password, passwordHash: providedPasswordHash } = request.body
+    const { username, name, password } = request.body
 
-    if (!password && !providedPasswordHash) {
-        return response.status(400).json({ error: 'password or passwordHash is required' })
-    }
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
 
-    const userData = {
+    const user = new User({
         username,
         name,
-        passwordHash: providedPasswordHash
-    }
+        passwordHash,
+    })
 
-    if (password) {
-        const saltRounds = 10
-        userData.passwordHash = await bcrypt.hash(password, saltRounds)
-    }
-
-    const user = new User(userData)
     const savedUser = await user.save()
+
     response.status(201).json(savedUser)
 })
 
