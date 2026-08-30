@@ -1,3 +1,4 @@
 .env
 requests
 node_modules
+tests/*.rest
