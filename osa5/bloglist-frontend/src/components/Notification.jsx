@@ -1,4 +1,4 @@
-import './Notification.css' 
+import './Notification.css'
 
 const Notification = ({ message, type }) => {
   if (message === null) {
