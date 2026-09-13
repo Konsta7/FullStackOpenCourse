@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, blogs, setBlogs }) => {
+const Blog = ({ blog, blogs, setBlogs, onLike }) => {
   const [showInfo, setShowInfo] = useState(false)
 
   const blogStyle = {
@@ -14,6 +14,11 @@ const Blog = ({ blog, blogs, setBlogs }) => {
 
   const handleLike = async (event) => {
     event.preventDefault()
+    if (onLike) {
+      onLike(blog)
+      return
+    }
+
     const updatedBlog = await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
     if (setBlogs && blogs) {
       setBlogs(blogs.map(b => b.id === updatedBlog.id ? updatedBlog : b))
