@@ -51,7 +51,7 @@ test('clicking the like button twice calls event handler twice', async () => {
     likes: 5
   }
   const mockHandler = vi.fn()
-  render(<Blog blog={blog} onLike={mockHandler} />)
+  render(<Blog blog={blog} onLike={mockHandler} user={{ name: 'Test User' }} />)
 
   const user = userEvent.setup()
   const showButton = screen.getByText('show')
