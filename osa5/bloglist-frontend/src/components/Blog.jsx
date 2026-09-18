@@ -1,18 +1,11 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 import { useNavigate } from 'react-router-dom'
+import { Box, Button, Typography } from '@mui/material'
 
 const Blog = ({ blog, blogs, setBlogs, onLike, user }) => {
   const [showInfo, setShowInfo] = useState(false)
   const navigate = useNavigate()
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
 
   const handleLike = async (event) => {
     event.preventDefault()
@@ -41,19 +34,74 @@ const Blog = ({ blog, blogs, setBlogs, onLike, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <span className="blog-title">{blog.title}</span>
-        <div>
-          {blog.url} <br />
-          likes {blog.likes || 0} {user && (<button onClick={handleLike}>like</button>)}
-          <br />
-          {blog.author} <br />
-          {user && blog.user?.username === user.username && (
-            <button onClick={handleRemove}>remove</button>
-          )}
-        </div>
-    </div>
-  )
+  <Box
+    sx={{
+      border: '1px solid #ddd',
+      borderRadius: 2,
+      padding: 2,
+      marginBottom: 2,
+      boxShadow: 1,
+      backgroundColor: 'white',
+    }}
+  >
+    <Typography
+      variant="h6"
+      sx={{
+        fontWeight: 'bold',
+        marginBottom: 1,
+      }}
+    >
+      {blog.title}
+    </Typography>
+
+    <Typography
+      variant="body2"
+      sx={{
+        color: 'text.secondary',
+        marginBottom: 1,
+      }}
+    >
+      {blog.url}
+    </Typography>
+
+    <Typography variant="body1">
+      Likes: {blog.likes || 0}
+    </Typography>
+
+    {user && (
+      <Button
+        variant="contained"
+        size="small"
+        onClick={handleLike}
+        sx={{ marginTop: 1 }}
+      >
+        Like
+      </Button>
+    )}
+
+    <Typography
+      variant="body2"
+      sx={{
+        marginTop: 1,
+        color: 'text.secondary',
+      }}
+    >
+      Author: {blog.author}
+    </Typography>
+
+    {user && blog.user?.username === user.username && (
+      <Button
+        variant="outlined"
+        color="error"
+        size="small"
+        onClick={handleRemove}
+        sx={{ marginTop: 1 }}
+      >
+        Remove
+      </Button>
+    )}
+  </Box>
+)
 }
 
 export default Blog

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 import { useNavigate } from 'react-router-dom'
+import { TextField, Button } from '@mui/material'
 
 const LoginForm = ({ setNotification, setType, setUser }) => {
   const [userName, setUserName] = useState('')
@@ -28,7 +29,7 @@ const LoginForm = ({ setNotification, setType, setUser }) => {
         setNotification(null)
         setType(null)
       }, 5000)
-      console.log(exception)
+      console.log("Wrong credentialsssss", exception)
     }
   }
 
@@ -36,30 +37,29 @@ const LoginForm = ({ setNotification, setType, setUser }) => {
     <div>
       <h2>Log in</h2>
       <form onSubmit={handleLogin}>
-        <div>
-          <label>
-            username
-            <input
-              type="text"
-              value={userName}
-              name="Username"
-              onChange={({ target }) => setUserName(target.value)}
-            />
-          </label>
-          <label>
-            password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </label>
-        </div>
-        <button type="submit">login</button>
+        <TextField
+          label="Username"
+          variant="standard"
+          value={userName}
+          onChange={({ target }) => setUserName(target.value)}
+        />
+        <br/>
+        <TextField
+          label="Password"
+          variant="standard"
+          type="password"
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+        />
+        <br/>
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+          login
+        </Button>
       </form>
     </div>
   )
 }
 
 export default LoginForm
+
+

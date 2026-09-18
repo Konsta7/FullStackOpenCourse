@@ -1,4 +1,5 @@
 import './Notification.css'
+import { Alert } from '@mui/material'
 
 const Notification = ({ message, type }) => {
   if (message === null) {
@@ -6,9 +7,9 @@ const Notification = ({ message, type }) => {
   }
 
   return (
-    <div className={type}>
+    <Alert severity={type} style={{ marginTop: 10, marginBottom: 10 }}>
       {message}
-    </div>
+    </Alert>
   )
 }
 

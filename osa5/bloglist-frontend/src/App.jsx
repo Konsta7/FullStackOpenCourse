@@ -11,12 +11,14 @@ import {
 } from 'react-router-dom'
 import BlogList from './components/BlogList'
 import BlogPage from './components/BlogPage'
+import { AppBar, Toolbar, Button, Box } from '@mui/material'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
   const [type, setType] = useState(null)
+  const style = { color: 'white', textDecoration: 'none', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
 
   useEffect(() => {
@@ -68,11 +70,31 @@ const App = () => {
     </div>
     */
     <Router>
-      <div>
-        <Link to="/">blogs</Link> 
-        <Link to="/create">new blog</Link>
-        {user ? <button onClick={logout}>logout</button> : <Link to="/login">login</Link> }
-      </div>
+      <AppBar position="static">
+        <Toolbar>
+          <h2>Blog App</h2>
+          <Box sx={{ marginLeft: 'auto' }}>
+            <Button color="inherit" style={style}><Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+              blogs
+            </Link></Button>
+            <Button color="inherit" style={style}>
+              <Link to="/create" style={{ color: 'inherit', textDecoration: 'none' }}>
+                new blog
+              </Link>
+            </Button>
+            {user ? (
+              <Button color="inherit" onClick={logout} style={style}>logout</Button>
+            ) : (
+              <Button color="inherit" style={style}>
+                <Link to="/login" style={{ color: 'inherit', textDecoration: 'none' }}>
+                  login
+                </Link>
+              </Button>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      {notification && <Notification message={notification} type={type} />}
       <Routes>
         <Route path="/" element={<BlogList blogs={blogs} setBlogs={setBlogs} user={user} />} />
         <Route path="/login" element={<LoginForm setNotification={setNotification} setType={setType} setUser={setUser} />} />

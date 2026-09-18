@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react'
 import blogService from '../services/blogs'
 import { useNavigate } from 'react-router-dom'
+import { TextField, Button } from '@mui/material'
 
 
 const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
@@ -27,6 +28,7 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
       setNewBlogUrl('')
       setNewBlogLikes(0)
       setNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+      console.log("Blog created successfully")
       setType('success')
       navigate('/')
       setTimeout(() => {
@@ -34,7 +36,7 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
         setType(null)
       }, 5000)
     } catch (exception) {
-      console.log(exception)
+      console.log("Ei creatatttuuuuuu", exception)
     }
   }
 
@@ -42,34 +44,32 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
     <div>
       <h2>create new</h2>
       <form onSubmit={handleCreateBlog}>
-        <label>
-          title:
-          <input
-            type="text"
-            value={newBlogTitle}
-            name="Title"
-            onChange={ ({ target }) => setNewBlogTitle(target.value) }
-          />
-        </label>
-        <label>
-          author:
-          <input
-            type="text"
-            value={newBlogAuthor}
-            name="Author"
-            onChange={ ({ target }) => setNewBlogAuthor(target.value) }
-          />
-        </label>
-        <label>
-          url:
-          <input
-            type="text"
-            value={newBlogUrl}
-            name="Url"
-              onChange={ ({ target }) => setNewBlogUrl(target.value) }
-          />
-        </label>
-        <button type="submit">create</button>
+        <TextField
+          label="Title"
+          variant="outlined"
+          value={newBlogTitle}
+          onChange={({ target }) => setNewBlogTitle(target.value)}
+          sx={{ mb: 2 }}
+        />
+        <br/>
+        <TextField
+          label="Author"
+          variant="outlined"
+          value={newBlogAuthor}
+          onChange={({ target }) => setNewBlogAuthor(target.value)}
+          sx={{ mb: 2 }}
+        />
+        <br/>
+        <TextField
+          label="Url"
+          variant="outlined"
+          value={newBlogUrl}
+          onChange={({ target }) => setNewBlogUrl(target.value)}
+        />
+        <br/>
+        <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+          create
+        </Button>
       </form>
     </div>
   )
