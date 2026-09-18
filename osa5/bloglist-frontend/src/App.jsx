@@ -5,6 +5,12 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import CreateBlog from './components/CreateBlog'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
+import BlogList from './components/BlogList'
+import BlogPage from './components/BlogPage'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -29,15 +35,6 @@ const App = () => {
   }, [])
 
 
-  const blogForm = () => (
-    <div>
-      {blogs.sort((a, b) => (b.likes- a.likes)).map(blog =>
-        <div key={blog.id}>
-          <Blog blog={blog} blogs={blogs} setBlogs={setBlogs} user={user}/>
-        </div>
-      )}
-    </div>
-  )
 
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
@@ -45,7 +42,9 @@ const App = () => {
   }
 
 
+
   return (
+    /*
     <div>
       {notification && <Notification message={notification} type={type} />}
       {!user && (
@@ -67,6 +66,20 @@ const App = () => {
         {blogForm()}
       </div>
     </div>
+    */
+    <Router>
+      <div>
+        <Link to="/">blogs</Link> 
+        <Link to="/create">new blog</Link>
+        {user ? <button onClick={logout}>logout</button> : <Link to="/login">login</Link> }
+      </div>
+      <Routes>
+        <Route path="/" element={<BlogList blogs={blogs} setBlogs={setBlogs} user={user} />} />
+        <Route path="/login" element={<LoginForm setNotification={setNotification} setType={setType} setUser={setUser} />} />
+        <Route path="/blogs/:id" element={<BlogPage blogs={blogs} setBlogs={setBlogs} user={user} />} />
+        <Route path="/create" element={<CreateBlog blogs={blogs} setBlogs={setBlogs} setNotification={setNotification} setType={setType} />} />
+      </Routes>
+    </Router>
   )
 }
 

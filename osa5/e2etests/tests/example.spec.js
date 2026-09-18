@@ -13,6 +13,77 @@ describe('Blog app', () => {
     })
     await page.goto('http://localhost:5173')
   })
+  test('Valid credentials log in successfully', async ({ page }) => {
+    await page.getByText('login').click()
+    await page.getByRole('textbox').first().fill('mluukkai')
+    await page.getByRole('textbox').last().fill('salainen')
+    await page.getByRole('button', { name: 'login' }).click()
+    await expect(page.getByRole('button', { name: 'logout' })).toBeVisible()
+  })
+
+  test('Invalid credentials show error message', async ({ page }) => {
+    await page.getByText('login').click()
+    await page.getByRole('textbox').first().fill('mluukkai')
+    await page.getByRole('textbox').last().fill('wrongpassword')
+    await page.getByRole('button', { name: 'login' }).click()
+    await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
+  })
+
+  test('Signed in user can create a blog', async ({ page }) => {
+    await page.getByText('login').click()
+    await page.getByRole('textbox').first().fill('mluukkai')
+    await page.getByRole('textbox').last().fill('salainen')
+    await page.getByRole('button', { name: 'login' }).click()
+    await page.getByText('new blog').click()
+    await page.getByRole('textbox', { name: 'Title' }).fill('Test Blog')
+    await page.getByRole('textbox', { name: 'Author' }).fill('Test Author')
+    await page.getByRole('textbox', { name: 'Url' }).fill('http://test.com')
+    await page.getByRole('button', { name: 'create' }).click()
+    await expect(page.getByText('Test Blog by Test Author')).toBeVisible()
+  })
+  test('Signed in user can like a blog', async ({ page }) => {
+    await page.getByText('login').click()
+    await page.getByRole('textbox').first().fill('mluukkai')
+    await page.getByRole('textbox').last().fill('salainen')
+    await page.getByRole('button', { name: 'login' }).click()
+    await page.getByText('new blog').click()
+    await page.getByRole('textbox', { name: 'Title' }).fill('Test Blog')
+    await page.getByRole('textbox', { name: 'Author' }).fill('Test Author')
+    await page.getByRole('textbox', { name: 'Url' }).fill('http://test.com')
+    await page.getByRole('button', { name: 'create' }).click()
+    await page.getByText('Test Blog by Test Author').click()
+    await page.getByRole('button', { name: 'like' }).click()
+    await expect(page.getByText('likes 1')).toBeVisible()
+  })
+  test('Signed in user can delete a blog', async ({ page }) => {
+    await page.getByText('login').click()
+    await page.getByRole('textbox').first().fill('mluukkai')
+    await page.getByRole('textbox').last().fill('salainen')
+    await page.getByRole('button', { name: 'login' }).click()
+    await page.getByText('new blog').click()
+    await page.getByRole('textbox', { name: 'Title' }).fill('Test Blog')
+    await page.getByRole('textbox', { name: 'Author' }).fill('Test Author')
+    await page.getByRole('textbox', { name: 'Url' }).fill('http://test.com')
+    await page.getByRole('button', { name: 'create' }).click()
+    await page.getByText('Test Blog by Test Author').click()
+    await page.getByRole('button', { name: 'delete' }).click()
+    await expect(page.getByText('Test Blog by Test Author')).not.toBeVisible()
+  })
+})
+
+/*
+describe('Blog app', () => {
+  beforeEach(async ({ page, request }) => {
+    await request.post('http://localhost:3001/api/testing/reset')
+    await request.post('http://localhost:3001/api/users', {
+      data: {
+        name: 'Matti Luukkainen',
+        username: 'mluukkai',
+        password: 'salainen'
+      }
+    })
+    await page.goto('http://localhost:5173')
+  })
   test('Login form is shown', async ({ page }) => {
     await expect(page.getByRole('button', { name: 'login' })).toBeVisible()
   })
@@ -85,3 +156,4 @@ describe('Blog app', () => {
     })
   })
 })
+*/

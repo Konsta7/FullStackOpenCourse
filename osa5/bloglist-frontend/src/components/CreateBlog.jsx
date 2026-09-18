@@ -1,11 +1,13 @@
 import React from 'react'
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import { useNavigate } from 'react-router-dom'
 
 
 const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
   const [newBlogTitle, setNewBlogTitle] = useState('')
   const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const navigate = useNavigate()
   const [newBlogUrl, setNewBlogUrl] = useState('')
   const [newBlogLikes, setNewBlogLikes] = useState(0)
 
@@ -26,6 +28,7 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
       setNewBlogLikes(0)
       setNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`)
       setType('success')
+      navigate('/')
       setTimeout(() => {
         setNotification(null)
         setType(null)
@@ -37,6 +40,7 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
 
   return (
     <div>
+      <h2>create new</h2>
       <form onSubmit={handleCreateBlog}>
         <label>
           title:
@@ -46,6 +50,8 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
             name="Title"
             onChange={ ({ target }) => setNewBlogTitle(target.value) }
           />
+        </label>
+        <label>
           author:
           <input
             type="text"
@@ -53,12 +59,14 @@ const CreateBlog = ({ blogs, setBlogs, setNotification, setType }) => {
             name="Author"
             onChange={ ({ target }) => setNewBlogAuthor(target.value) }
           />
+        </label>
+        <label>
           url:
           <input
             type="text"
             value={newBlogUrl}
             name="Url"
-            onChange={ ({ target }) => setNewBlogUrl(target.value) }
+              onChange={ ({ target }) => setNewBlogUrl(target.value) }
           />
         </label>
         <button type="submit">create</button>

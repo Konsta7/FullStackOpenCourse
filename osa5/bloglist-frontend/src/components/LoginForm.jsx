@@ -2,10 +2,12 @@ import React from 'react'
 import { useState } from 'react'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
+import { useNavigate } from 'react-router-dom'
 
 const LoginForm = ({ setNotification, setType, setUser }) => {
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
 
@@ -18,6 +20,7 @@ const LoginForm = ({ setNotification, setType, setUser }) => {
       setUser(user)
       setUserName('')
       setPassword('')
+      navigate('/')
     } catch (exception) {
       setNotification('wrong credentials')
       setType('error')

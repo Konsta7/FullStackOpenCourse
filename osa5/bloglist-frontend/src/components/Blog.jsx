@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import { useNavigate } from 'react-router-dom'
 
 const Blog = ({ blog, blogs, setBlogs, onLike, user }) => {
   const [showInfo, setShowInfo] = useState(false)
+  const navigate = useNavigate()
 
   const blogStyle = {
     paddingTop: 10,
@@ -31,6 +33,7 @@ const Blog = ({ blog, blogs, setBlogs, onLike, user }) => {
       try {
         await blogService.remove(blog.id)
         setBlogs(blogs.filter(b => b.id !== blog.id))
+        navigate('/')
       } catch (error) {
         console.error(error)
       }
@@ -39,17 +42,16 @@ const Blog = ({ blog, blogs, setBlogs, onLike, user }) => {
 
   return (
     <div style={blogStyle}>
-      <span class="blog-title">{blog.title}</span>
-      <button onClick={() => setShowInfo(!showInfo)}>{showInfo ? 'hide' : 'show'}</button>
-      {showInfo && (
+      <span className="blog-title">{blog.title}</span>
         <div>
           {blog.url} <br />
           likes {blog.likes || 0} {user && (<button onClick={handleLike}>like</button>)}
           <br />
           {blog.author} <br />
-          {user && (<button onClick={handleRemove}>remove</button>)}
+          {user && blog.user?.username === user.username && (
+            <button onClick={handleRemove}>remove</button>
+          )}
         </div>
-      )}
     </div>
   )
 }

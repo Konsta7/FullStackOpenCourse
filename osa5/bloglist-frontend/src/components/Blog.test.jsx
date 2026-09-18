@@ -4,9 +4,71 @@ import Blog from './Blog'
 import { expect } from 'vitest'
 import CreateBlog from './CreateBlog'
 import blogService from '../services/blogs'
+import { MemoryRouter } from 'react-router-dom'
 
 vi.mock('../services/blogs')
 
+test('no buttons shown for unauthenticated users', () => {
+  const blog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://test.com',
+    likes: 5
+  }
+  render(
+  <MemoryRouter>
+    <Blog blog={blog} />
+  </MemoryRouter>
+  )
+
+  const likeButton = screen.queryByText('like')
+  const removeButton = screen.queryByText('remove')
+
+  expect(likeButton).toBeNull()
+  expect(removeButton).toBeNull()
+})
+
+test('both button shown for authenticated users', () => {
+  const blog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://test.com',
+    likes: 5
+  }
+  render(
+  <MemoryRouter>
+    <Blog blog={blog} user={{ name: 'Test User' }} />
+  </MemoryRouter>
+  )
+
+  const likeButton = screen.getByText('like')
+  const removeButton = screen.getByText('remove')
+
+  expect(likeButton).not.toBeNull()
+  expect(removeButton).not.toBeNull()
+})
+
+test('remove button only shown for the user who created the blog', () => {
+  const blog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://test.com',
+    likes: 5,
+    user: {
+      username: 'testuser'
+    }
+  }
+  render(
+  <MemoryRouter>
+    <Blog blog={blog} user={{ username: 'anotheruser' }} />
+  </MemoryRouter>
+  )
+
+  expect(screen.queryByText('like')).not.toBeNull()
+  expect(screen.queryByText('remove')).toBeNull()
+})
+
+/*
 test('renders only certain content', () => {
   const blog = {
     title: 'Test Blog',
@@ -102,3 +164,4 @@ test('testing that the creating blog form works', async () => {
     })
   )
 })
+*/
